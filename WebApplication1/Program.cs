@@ -60,5 +60,4 @@ app.MapPut("api/Sell", async (Sell sell, ModelDB db) =>
     return Results.Json(s);
 });
 
-
 app.Run();
