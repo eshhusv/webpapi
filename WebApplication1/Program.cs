@@ -37,7 +37,7 @@ app.Map("/login/{username}", (string username) =>
         signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
     return new JwtSecurityTokenHandler().WriteToken(jwt);
 });
-app.Map("/hello", [Authorize] () => "Hello world");
+app.Map("/hello", [Authorize] () => new {message="Hello world!"});
 app.Map("/", () => "Home Page");
 app.UseDefaultFiles();
 app.UseStaticFiles();
