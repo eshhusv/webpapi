@@ -7,7 +7,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddAuthentication("Bearer").AddJwtBearer();
+//builder.Services.AddAuthentication("Bearer").AddJwtBearer();
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
@@ -37,8 +37,6 @@ app.Map("/login/{username}", (string username) =>
         signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
     return new JwtSecurityTokenHandler().WriteToken(jwt);
 });
-app.Map("/hello", [Authorize] () => new {message="Hello world!"});
-app.Map("/", () => "Home Page");
 app.UseDefaultFiles();
 app.UseStaticFiles();
 app.MapGet("api/Admission", async (ModelDB db) => await db.Admissions!.ToListAsync());
@@ -93,5 +91,6 @@ app.MapPut("api/Sell", async (Sell sell, ModelDB db) =>
     await db.SaveChangesAsync();
     return Results.Json(s);
 });
-
+app.Map("/hello", [Authorize] () => new { message = "Hello world!" });
+app.Map("/", () => "Home Page");
 app.Run();
