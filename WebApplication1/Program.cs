@@ -1,10 +1,44 @@
 using WebApplication1;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddAuthentication("Bearer").AddJwtBearer();
+builder.Services.AddAuthorization();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidIssuer = AuthOptions.ISSUER,
+        ValidateAudience = true,
+        ValidAudience = AuthOptions.AUDIENCE,
+        ValidateLifetime = true,
+        IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
+        ValidateIssuerSigningKey = true
+    };
+});
 string? connection = builder.Configuration.GetConnectionString("DefaultConnection");
 IServiceCollection serviceCollection = builder.Services.AddDbContext<ModelDB>(options => options.UseSqlServer(connection));
 var app = builder.Build();
+app.UseAuthorization();
+app.UseAuthentication();
+app.Map("/login/{username}", (string username) =>
+{
+    var claims = new List<Claim> { new Claim(ClaimTypes.Name, username) };
+    var jwt = new JwtSecurityToken(issuer: AuthOptions.ISSUER,
+        audience: AuthOptions.AUDIENCE,
+        claims: claims,
+        expires: DateTime.Now.Add(TimeSpan.FromMinutes(2)),
+        signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
+    return new JwtSecurityTokenHandler().WriteToken(jwt);
+});
+app.Map("/hello", [Authorize] () => "Hello world");
+app.Map("/", () => "Home Page");
 app.UseDefaultFiles();
 app.UseStaticFiles();
 app.MapGet("api/Admission", async (ModelDB db) => await db.Admissions!.ToListAsync());
