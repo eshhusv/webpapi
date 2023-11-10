@@ -6,12 +6,12 @@ namespace WebApplication1
     {
         public ModelDB(DbContextOptions options) : base(options)
         {
-            //Database.EnsureCreated();
+            Database.EnsureCreated();
         }
 
         public DbSet<Admission> Admissions { get; set; }
         public DbSet<Sell> SellOrders { get; set; }
-
+        public DbSet<User>? Users { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Sell>().HasData(
@@ -40,6 +40,8 @@ namespace WebApplication1
                 new Admission { Name = "Urmom", VenorCode = 000000006, Price = 140,Id=6 },
                 new Admission { Name = "NuclearWeapon", VenorCode = 000000007, Price = 140,Id=7 }
                 );
+            modelBuilder.Entity<User>().HasData(
+                new User { Id = 1, EMail = "Z@gmail.com", Password = "Zalupa" });
         }
     }
 }

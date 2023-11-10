@@ -27,33 +27,42 @@ IServiceCollection serviceCollection = builder.Services.AddDbContext<ModelDB>(op
 var app = builder.Build();
 app.UseAuthorization();
 app.UseAuthentication();
-app.Map("/login/{username}", (string username) =>
+app.Map("/login", async(User loginData, ModelDB db) =>
 {
-    var claims = new List<Claim> { new Claim(ClaimTypes.Name, username) };
+    User? person = await db.Users!.FirstOrDefaultAsync(p => p.EMail == loginData.EMail && p.Password == loginData.Password);
+    if (person == null) return Results.Unauthorized();
+
+    var claims = new List<Claim> { new Claim(ClaimTypes.Email, person.EMail!) };
     var jwt = new JwtSecurityToken(issuer: AuthOptions.ISSUER,
         audience: AuthOptions.AUDIENCE,
         claims: claims,
         expires: DateTime.Now.Add(TimeSpan.FromMinutes(2)),
         signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
-    return new JwtSecurityTokenHandler().WriteToken(jwt);
+    var encoderJWT = new JwtSecurityTokenHandler().WriteToken(jwt);
+    var response = new
+    {
+        access_token = encoderJWT,
+        username = person.EMail
+    };
+    return Results.Json(response);
 });
 app.UseDefaultFiles();
 app.UseStaticFiles();
-app.MapGet("api/Admission", async (ModelDB db) => await db.Admissions!.ToListAsync());
-app.MapGet("api/Admission/{name}", async (ModelDB db, string name) => await db.Admissions!.Where(u=>u.Name==name).ToListAsync());
-app.MapPost("api/Admission", async (Admission admission, ModelDB db) =>
+app.MapGet("api/Admission", [Authorize] async (ModelDB db) => await db.Admissions!.ToListAsync());
+app.MapGet("api/Admission/{name}", [Authorize] async (ModelDB db, string name) => await db.Admissions!.Where(u=>u.Name==name).ToListAsync());
+app.MapPost("api/Admission", [Authorize] async (Admission admission, ModelDB db) =>
 {
     await db.Admissions!.AddAsync(admission);
     await db.SaveChangesAsync();
     return admission;
 });
-app.MapPost("api/Sell", async (Sell sell, ModelDB db) =>
+app.MapPost("api/Sell", [Authorize] async (Sell sell, ModelDB db) =>
 {
     await db.SellOrders!.AddAsync(sell);
     await db.SaveChangesAsync();
     return sell;
 });
-app.MapDelete("api/Admission/{name}", async (int id, ModelDB db) =>
+app.MapDelete("api/Admission/{name}", [Authorize] async (int id, ModelDB db) =>
 {
     Admission? admission = await db.Admissions.FirstOrDefaultAsync(u=>u.Id==id);
     if (admission != null) return Results.NotFound(new { message = "Пользователь не найден" });
@@ -61,7 +70,7 @@ app.MapDelete("api/Admission/{name}", async (int id, ModelDB db) =>
     await db.SaveChangesAsync();
     return Results.Json(admission);
 });
-app.MapDelete("api/Sell/{name}", async (int id, ModelDB db) =>
+app.MapDelete("api/Sell/{name}", [Authorize] async (int id, ModelDB db) =>
 {
     Sell? sell = await db.SellOrders.FirstOrDefaultAsync(u => u.Id == id);
     if (sell != null) return Results.NotFound(new { message = "Продажа не найден" });
@@ -69,7 +78,7 @@ app.MapDelete("api/Sell/{name}", async (int id, ModelDB db) =>
     await db.SaveChangesAsync();
     return Results.Json(sell);
 });
-app.MapPut("api/Admission", async (Admission admission, ModelDB db) =>
+app.MapPut("api/Admission", [Authorize] async (Admission admission, ModelDB db) =>
 {
     Admission? a = await db.Admissions.FirstOrDefaultAsync(u => u.Id == admission.Id);
     if (admission != null) return Results.NotFound(new { message = "Пользователь не найден" });
@@ -79,7 +88,7 @@ app.MapPut("api/Admission", async (Admission admission, ModelDB db) =>
     await db.SaveChangesAsync();
     return Results.Json(a);
 });
-app.MapPut("api/Sell", async (Sell sell, ModelDB db) =>
+app.MapPut("api/Sell", [Authorize] async (Sell sell, ModelDB db) =>
 {
     Sell? s = await db.SellOrders.FirstOrDefaultAsync(u => u.Id == sell.Id);
     if (sell != null) return Results.NotFound(new { message = "Пользователь не найден" });
@@ -92,5 +101,5 @@ app.MapPut("api/Sell", async (Sell sell, ModelDB db) =>
     return Results.Json(s);
 });
 app.Map("/hello", [Authorize] () => new { message = "Hello world!" });
-app.Map("/", () => "Home Page");
+app.Map("/", [Authorize] () => "Home Page");
 app.Run();
