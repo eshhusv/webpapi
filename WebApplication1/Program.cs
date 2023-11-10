@@ -64,7 +64,7 @@ app.MapPost("api/Sell", [Authorize] async (Sell sell, ModelDB db) =>
 });
 app.MapDelete("api/Admission/{name}", [Authorize] async (int id, ModelDB db) =>
 {
-    Admission? admission = await db.Admissions.FirstOrDefaultAsync(u=>u.Id==id);
+    Admission? admission = await db.Admissions.FirstOrDefaultAsync(u=>u.VenorCode==id);
     if (admission != null) return Results.NotFound(new { message = "Пользователь не найден" });
     db.Admissions.Remove(admission);
     await db.SaveChangesAsync();
@@ -80,7 +80,7 @@ app.MapDelete("api/Sell/{name}", [Authorize] async (int id, ModelDB db) =>
 });
 app.MapPut("api/Admission", [Authorize] async (Admission admission, ModelDB db) =>
 {
-    Admission? a = await db.Admissions.FirstOrDefaultAsync(u => u.Id == admission.Id);
+    Admission? a = await db.Admissions.FirstOrDefaultAsync(u => u.VenorCode == admission.VenorCode);
     if (admission != null) return Results.NotFound(new { message = "Пользователь не найден" });
     a.VenorCode = admission.VenorCode;
     a.Price = admission.Price;

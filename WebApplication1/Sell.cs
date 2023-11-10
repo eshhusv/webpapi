@@ -9,10 +9,11 @@ namespace WebApplication1
         [Required]
         public DateTime SellingDate { get; set; }
         [Required]
-        public int VenorCode { get; set; }
-        [Required]
         public string? Name { get; set; }
         public int CountOfSold { get; set; }
         public double PriceOfSold { get; set; }
+        [Required]
+        public int VenorCode { get; set; }
+        public Admission? Admission { get; set; }
     }
 }

@@ -32,13 +32,13 @@ namespace WebApplication1
                 new Sell { Name="NuclearWeaponSell", VenorCode=000000015, SellingDate=new DateTime(30/10/2023), Id=15}
                 );
             modelBuilder.Entity<Admission>().HasData(
-                new Admission { Name = "Gay", VenorCode = 000000001, Price = 12, Id=1 },
-                new Admission { Name = "Nigger", VenorCode = 000000002, Price = 20,Id=2 },
-                new Admission { Name = "Kapusta)", VenorCode = 000000003, Price = 280,Id=3 },
-                new Admission { Name = "Banana", VenorCode = 000000004, Price = 140,Id=4 },
-                new Admission { Name = "Leaf", VenorCode = 000000005, Price = 140,Id=5 },
-                new Admission { Name = "Urmom", VenorCode = 000000006, Price = 140,Id=6 },
-                new Admission { Name = "NuclearWeapon", VenorCode = 000000007, Price = 140,Id=7 }
+                new Admission { Name = "Gay", VenorCode = 000000001, Price = 12 },
+                new Admission { Name = "Nigger", VenorCode = 000000002, Price = 20 },
+                new Admission { Name = "Kapusta)", VenorCode = 000000003, Price = 280 },
+                new Admission { Name = "Banana", VenorCode = 000000004, Price = 140},
+                new Admission { Name = "Leaf", VenorCode = 000000005, Price = 140 },
+                new Admission { Name = "Urmom", VenorCode = 000000006, Price = 140 },
+                new Admission { Name = "NuclearWeapon", VenorCode = 000000007, Price = 140 }
                 );
             modelBuilder.Entity<User>().HasData(
                 new User { Id = 1, EMail = "Z@gmail.com", Password = "Zalupa" });
