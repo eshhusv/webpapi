@@ -41,7 +41,7 @@ namespace WebApplication1
                 new Admission { Name = "NuclearWeapon", VenorCode = 000000007, Price = 140 }
                 );
             modelBuilder.Entity<User>().HasData(
-                new User { Id = 1, EMail = "Z@gmail.com", Password = "Zalupa" });
+                new User { Id = 1, EMail = "Z@gmail.com", Password = "ZaNashih" });
         }
     }
 }

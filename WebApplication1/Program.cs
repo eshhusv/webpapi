@@ -24,9 +24,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 string? connection = builder.Configuration.GetConnectionString("DefaultConnection");
 IServiceCollection serviceCollection = builder.Services.AddDbContext<ModelDB>(options => options.UseSqlServer(connection));
 var app = builder.Build();
-app.UseAuthorization();
+app.UseDefaultFiles();
+app.UseStaticFiles();
 app.UseAuthentication();
-app.Map("/login", async(User loginData, ModelDB db) =>
+app.UseAuthorization();
+app.MapPost("/login", async(User loginData, ModelDB db) =>
 {
     User? person = await db.Users!.FirstOrDefaultAsync(p => p.EMail == loginData.EMail && p.Password == loginData.Password);
     if (person == null) return Results.Unauthorized();
@@ -45,9 +47,9 @@ app.Map("/login", async(User loginData, ModelDB db) =>
     };
     return Results.Json(response);
 });
-app.UseDefaultFiles();
-app.UseStaticFiles();
+
 app.MapGet("api/Admission", [Authorize] async (ModelDB db) => await db.Admissions!.ToListAsync());
+app.MapGet("api/Sell", [Authorize] async (ModelDB db) => await db.SellOrders!.ToListAsync());
 app.MapGet("api/Admission/{name}", [Authorize] async (ModelDB db, string name) => await db.Admissions!.Where(u=>u.Name==name).ToListAsync());
 app.MapPost("api/Admission", [Authorize] async (Admission admission, ModelDB db) =>
 {
