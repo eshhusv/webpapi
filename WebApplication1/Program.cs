@@ -45,12 +45,12 @@ app.MapPost("/login", async(User loginData, ModelDB db) =>
         access_token = encoderJWT,
         username = person.EMail
     };
-    return Results.Json(response);
+    return Results.Json(response);  
 });
 
 app.MapGet("api/Admission", [Authorize] async (ModelDB db) => await db.Admissions!.ToListAsync());
 app.MapGet("api/Sell", [Authorize] async (ModelDB db) => await db.SellOrders!.ToListAsync());
-app.MapGet("api/Admission/{name}", [Authorize] async (ModelDB db, string name) => await db.Admissions!.Where(u=>u.Name==name).ToListAsync());
+app.MapGet("api/Admission/{venorcode:int}", [Authorize] async (ModelDB db, int venorcode) => await db.Admissions!.Where(u=>u.VenorCode == venorcode).ToListAsync());
 app.MapPost("api/Admission", [Authorize] async (Admission admission, ModelDB db) =>
 {
     await db.Admissions!.AddAsync(admission);
@@ -63,7 +63,7 @@ app.MapPost("api/Sell", [Authorize] async (Sell sell, ModelDB db) =>
     await db.SaveChangesAsync();
     return sell;
 });
-app.MapDelete("api/Admission/{name}", [Authorize] async (int id, ModelDB db) =>
+app.MapDelete("api/Admission/{venorcode:int}", [Authorize] async (int id, ModelDB db) =>
 {
     Admission? admission = await db.Admissions.FirstOrDefaultAsync(u=>u.VenorCode==id);
     if (admission != null) return Results.NotFound(new { message = "Пользователь не найден" });
@@ -71,10 +71,10 @@ app.MapDelete("api/Admission/{name}", [Authorize] async (int id, ModelDB db) =>
     await db.SaveChangesAsync();
     return Results.Json(admission);
 });
-app.MapDelete("api/Sell/{name}", [Authorize] async (int id, ModelDB db) =>
+app.MapDelete("api/Sell/{venorcode:int}", [Authorize] async (int venorcode, ModelDB db) =>
 {
-    Sell? sell = await db.SellOrders.FirstOrDefaultAsync(u => u.Id == id);
-    if (sell != null) return Results.NotFound(new { message = "Продажа не найден" });
+    Sell? sell = await db.SellOrders.FirstOrDefaultAsync(u => u.VenorCode == venorcode);
+    if (sell != null) return Results.NotFound(new { message = "Продажа не найдена" });
     db.SellOrders.Remove(sell);
     await db.SaveChangesAsync();
     return Results.Json(sell);
