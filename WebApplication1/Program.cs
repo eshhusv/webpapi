@@ -52,7 +52,7 @@ app.MapGet("api/Admission", [Authorize] async (ModelDB db) => await db.Admission
 app.MapGet("api/Sell", [Authorize] async (ModelDB db) => await db.SellOrders!.ToListAsync());
 app.MapGet("api/Admission/{venorcode:int}", [Authorize] async (ModelDB db, int venorcode) => await db.Admissions!.Where(u=>u.VenorCode == venorcode).FirstOrDefaultAsync());
 app.MapPost("api/Admission", [Authorize] async (Admission admission, ModelDB db) =>
-{
+{ 
     await db.Admissions!.AddAsync(admission);
     await db.SaveChangesAsync();
     return admission;
