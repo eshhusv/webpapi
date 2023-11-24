@@ -5,6 +5,8 @@ namespace WebApplication1
     public class Admission
     {
         [Key]
+        public int Id { get; set; }
+        [Required]
         public int VenorCode { get; set; }
         [Required]
         public string? Name { get; set; }

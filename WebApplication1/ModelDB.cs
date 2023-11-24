@@ -15,8 +15,8 @@ namespace WebApplication1
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Sell>().HasData(
-                new Sell { Name="GaySell", VenorCode=1, SellingDate=new DateTime(28/10/2023), Id=1},
-                new Sell { Name="NiggerSell", VenorCode=2, SellingDate=new DateTime(29/10/2023), Id=2},
+                new Sell { Name="Adm1Sell", VenorCode=1, SellingDate=new DateTime(28/10/2023), Id=1},
+                new Sell { Name="Adm2Sell", VenorCode=2, SellingDate=new DateTime(29/10/2023), Id=2},
                 new Sell { Name="Kapysta)Sell", VenorCode=3, SellingDate=new DateTime(30/10/2023), Id=3},
                 new Sell { Name="BananaSell", VenorCode=3, SellingDate=new DateTime(30/10/2023), Id=4},
                 new Sell { Name="LeafSell", VenorCode=5, SellingDate=new DateTime(30/10/2023), Id=5},
@@ -32,16 +32,16 @@ namespace WebApplication1
                 new Sell { Name="NuclearWeaponSell", VenorCode=15, SellingDate=new DateTime(30/10/2023), Id=15}
                 );
             modelBuilder.Entity<Admission>().HasData(
-                new Admission { Name = "Gay", VenorCode = 1, Price = 12 },
-                new Admission { Name = "Nigger", VenorCode = 2, Price = 20 },
-                new Admission { Name = "Kapusta)", VenorCode = 3, Price = 280 },
-                new Admission { Name = "Banana", VenorCode = 4, Price = 140},
-                new Admission { Name = "Leaf", VenorCode = 5, Price = 140 },
-                new Admission { Name = "Urmom", VenorCode = 6, Price = 140 },
-                new Admission { Name = "NuclearWeapon", VenorCode = 7, Price = 140 }
+                new Admission { Id = 1, Name = "Adm1", VenorCode = 1, Price = 12 },
+                new Admission { Id = 2, Name = "Adm2", VenorCode = 2, Price = 20 },
+                new Admission { Id = 3, Name = "Kapusta)", VenorCode = 3, Price = 280 },
+                new Admission { Id = 4, Name = "Banana", VenorCode = 4, Price = 140},
+                new Admission { Id = 5, Name = "Leaf", VenorCode = 5, Price = 140 },
+                new Admission { Id = 6, Name = "Urmom", VenorCode = 6, Price = 140 },
+                new Admission { Id = 7, Name = "NuclearWeapon", VenorCode = 7, Price = 140 }
                 );
             modelBuilder.Entity<User>().HasData(
-                new User { Id = 1, EMail = "Z@gmail.com", Password = "ZaNashih" });
+                new User { Id = 1, EMail = "Z@gmail.com", Password = "123" });
         }
     }
 }

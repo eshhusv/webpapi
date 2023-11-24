@@ -21,6 +21,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         ValidateIssuerSigningKey = true
     };
 });
+
 string? connection = builder.Configuration.GetConnectionString("DefaultConnection");
 IServiceCollection serviceCollection = builder.Services.AddDbContext<ModelDB>(options => options.UseSqlServer(connection));
 var app = builder.Build();
@@ -50,7 +51,7 @@ app.MapPost("/login", async(User loginData, ModelDB db) =>
 
 app.MapGet("api/Admission", [Authorize] async (ModelDB db) => await db.Admissions!.ToListAsync());
 app.MapGet("api/Sell", [Authorize] async (ModelDB db) => await db.SellOrders!.ToListAsync());
-app.MapGet("api/Admission/{venorcode:int}", [Authorize] async (ModelDB db, int venorcode) => await db.Admissions!.Where(u=>u.VenorCode == venorcode).FirstOrDefaultAsync());
+app.MapGet("api/Admission/{Id:int}", [Authorize] async (ModelDB db, int id) => await db.Admissions!.Where(u=>u.Id == id).FirstOrDefaultAsync());
 app.MapPost("api/Admission", [Authorize] async (Admission admission, ModelDB db) =>
 { 
     await db.Admissions!.AddAsync(admission);
@@ -63,9 +64,9 @@ app.MapPost("api/Sell", [Authorize] async (Sell sell, ModelDB db) =>
     await db.SaveChangesAsync();
     return sell;
 });
-app.MapDelete("api/Admission/{venorcode:int}", [Authorize] async (int id, ModelDB db) =>
+app.MapDelete("api/Admission/{Id:int}", [Authorize] async (int id, ModelDB db) =>
 {
-    Admission? admission = await db.Admissions.FirstOrDefaultAsync(u=>u.VenorCode==id);
+    Admission? admission = await db.Admissions.FirstOrDefaultAsync(u=>u.Id==id);
     if (admission != null) return Results.NotFound(new { message = "Пользователь не найден" });
     db.Admissions.Remove(admission);
     await db.SaveChangesAsync();
@@ -82,9 +83,9 @@ app.MapDelete("api/Sell/{venorcode:int}", [Authorize] async (int venorcode, Mode
 app.MapPut("api/Admission", [Authorize] async (Admission admission, ModelDB db) =>
 {
     Admission? a = await db.Admissions.FirstOrDefaultAsync(u => u.VenorCode == admission.VenorCode);
-    if (admission != null) return Results.NotFound(new { message = "Пользователь не найден" });
+    if (a != null) return Results.NotFound(new { message = "Пользователь не найден" });
     a.VenorCode = admission.VenorCode;
-    a.Price = admission.Price;
+    a.Price = admission.Price;  
     a.Name = admission.Name;
     await db.SaveChangesAsync();
     return Results.Json(a);
@@ -92,7 +93,7 @@ app.MapPut("api/Admission", [Authorize] async (Admission admission, ModelDB db) 
 app.MapPut("api/Sell", [Authorize] async (Sell sell, ModelDB db) =>
 {
     Sell? s = await db.SellOrders.FirstOrDefaultAsync(u => u.Id == sell.Id);
-    if (sell != null) return Results.NotFound(new { message = "Пользователь не найден" });
+    if (s != null) return Results.NotFound(new { message = "Пользователь не найден" });
     s.VenorCode = sell.VenorCode;
     s.SellingDate = sell.SellingDate;
     s.Name = sell.Name;
@@ -101,6 +102,4 @@ app.MapPut("api/Sell", [Authorize] async (Sell sell, ModelDB db) =>
     await db.SaveChangesAsync();
     return Results.Json(s);
 });
-app.Map("/hello", [Authorize] () => new { message = "Hello world!" });
-app.Map("/", [Authorize] () => "Home Page");
 app.Run();
